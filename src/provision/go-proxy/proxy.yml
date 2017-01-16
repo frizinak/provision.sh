@@ -1,0 +1,11 @@
+account_keyfile: <account>
+certificate_keyfile: certificate_rsa_id
+certificate_cachefile: certificate
+acme_directory: https://acme-staging.api.letsencrypt.org/directory
+#acme_directory: https://acme-v01.api.letsencrypt.org/directory
+acme_mailto: email@site.com
+
+http: :8080
+tls: :8081
+
+proxy: {<servers>}

@@ -1,0 +1,21 @@
+[Unit]
+Description=Redis client
+After=network.target
+
+[Service]
+Type=forking
+ExecStartPre=-/bin/rm <sock>
+ExecStartPost=/bin/chmod 666 <sock>
+ExecStart=/usr/bin/ssh -N -T -oExitOnForwardFailure=yes \
+    -L '<sock>':'<sock>' \
+    -i /root/redis.id_rsa -f <user>@<host>
+CapabilityBoundingSet=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=false
+NoNewPrivileges=true
+LimitNOFILE=10032
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,123 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+export EDITOR="vimk"
+export TERM="xterm-256color"
+
+
+_join_args() {
+    local IFS="$1"; shift; echo "$*";
+}
+
+_short_cwd() {
+    local IFS='/'
+    local short_cwd="${PWD/#$HOME/'~'}"
+    short_cwd="${short_cwd/#~\//}"
+    local abs=${short_cwd:0:1}
+    if [ "$abs" != "/" ]; then abs=""; fi
+    _test=( $short_cwd )
+    if [ ${#_test[@]} -gt 4 ]; then
+        short_cwd="${abs}$(_join_args / ${_test[@]:0:1} ${_test[@]:1:1})… $(_join_args / ${_test[@]:(-2):1} ${_test[@]:(-1):1})"
+        #"${_test[@]:0:2}ܢ${_test[@]:(-2)}";
+    fi
+
+    echo -n "$short_cwd"
+}
+
+_tmux_last_cmd() {
+    if [ -z "$TMUX" ]; then
+        return
+    fi
+
+    if [ "$1" != "1" ]; then
+        if ! tmux list-panes | grep '^0:' | grep '(active)' >/dev/null 2>&1; then
+            return
+        fi
+    fi
+
+    case "$_this_command" in
+        _PROMPT|bg   |fg   |ls   |cd   |pwd   |xsel   |echo   )
+            _this_command=
+            ;;
+        _PROMPT|bg\ *|fg\ *|ls\ *|cd\ *|pwd\ *|xsel\ *|echo\ *)
+            _this_command=
+            ;;
+    esac
+
+    if [ "$1" != "1" ]; then
+        printf '\033k%s - %s\033\\' "$(_short_cwd)" "$_this_command"
+    fi
+}
+
+# Prompt
+_PROMPT() {
+    _AT_P=1
+    _tmux_last_cmd 0
+    export PS1="\e[1;30m\u@\H\e[0m - \[\e[0;34m\]$(_short_cwd) \[\e[0;32m\]$(current_git_branch '' '')\[\e[0m\] "
+}
+
+prompt_set_extended() {
+    export PROMPT_COMMAND=_PROMPT
+}
+
+prompt_set_basic() {
+    export PROMPT_COMMAND=''
+    export PS1='> '
+}
+
+# Various
+shopt -s checkwinsize
+shopt -s histappend
+HISTCONTROL="ignoredups"
+HISTSIZE=1000000
+
+function print_shell_colors () {
+for x in 0 1 4 5 7 8; do for i in `seq 30 37`; do for a in `seq 40 47`; do echo -ne "\033[$x;$i;$a""m\\\033[$x;$i;$a""m\033[0m "; done; echo; done; done; echo "";
+}
+
+function current_git_branch () {
+    if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+        return
+    fi
+    local repo=$(basename $(git remote show -n origin | grep Fetch | cut -d: -f2- | sed 's/\.git//'))
+    if [ "$repo" == "dotties" ];then
+        return
+    fi
+
+    echo "$1 $repo | $(git rev-parse --abbrev-ref HEAD)$2"
+}
+
+function bu() {
+    fn="$1--$(date +%d-%m-%y--%H-%M-%S).tar.gz"
+    tar -zcf $fn $1;
+    echo "$fn";
+}
+
+# Aliases
+alias ls='ls --color=auto'
+alias reload=". ~/.bashrc"
+alias la="ls -alh"
+alias lal="ls -alh"
+alias duc="du -smx .[!.]* * | sort -n"
+alias bp='prompt_set_basic'
+alias ep='prompt_set_extended'
+alias gb='git log --graph --simplify-merges --tags --format="%h %s %Cblue %D %Cred %aE%Creset" --decorate=short HEAD'
+alias gba='git log --all --graph --simplify-merges --tags --format="%h %s %Cblue %D %Cred %aE%Creset" --decorate=short'
+
+alias cwd='pwd | xsel -is'
+alias gwd='cd `xsel -os`'
+
+# Fix <C-s>
+stty -ixon
+set -o vi
+set -o ignoreeof
+alias s='sudo -E'
+
+prompt_set_extended

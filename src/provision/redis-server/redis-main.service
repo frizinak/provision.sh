@@ -1,0 +1,20 @@
+[Unit]
+Description=Advanced key-value store
+After=network.target
+
+[Service]
+Type=simple
+User=<user>
+Group=<user>
+ExecStart=/usr/bin/redis-server <conf>
+ExecStop=/usr/bin/redis-cli -s <sock> shutdown
+CapabilityBoundingSet=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+ProtectHome=false
+NoNewPrivileges=true
+LimitNOFILE=10032
+
+[Install]
+WantedBy=multi-user.target
