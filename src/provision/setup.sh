@@ -29,6 +29,11 @@ done
 #################################### UPDATE ####################################
 ################################################################################
 sed -i "s/mirrors.digitalocean/archive\.ubuntu/g" /etc/apt/sources.list
+systemctl disable apt-daily.timer || true
+systemctl stop apt-daily.timer || true
+systemctl disable apt-daily.service || true
+systemctl stop apt-daily.service || true
+
 if [ $flag_update -eq 1 ]; then
     apt-get update
 fi
