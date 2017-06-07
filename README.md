@@ -30,12 +30,6 @@ output: text
 
 edit src/provision/authorized_keys and replace with one of your ssh pubkeys
 
-# cwd
-
-every single script should be executed from the repo root... (:/ ikr)
-
-i.e.: `./droplet.sh` `./servers/domain/dns-record/provision-ip.sh` `...`
-
 # droplet.sh
 
 `./droplet.sh domain region size imageRE`

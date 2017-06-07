@@ -1,6 +1,15 @@
 #! /bin/bash
 set -e
 
+# http://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+cd -P "$(dirname "$SOURCE")"
+
 source 'do.sh'
 source 'utils.sh'
 ################################################################################
