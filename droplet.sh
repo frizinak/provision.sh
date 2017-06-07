@@ -586,8 +586,13 @@ make
 user=root
 if ! ssh -oStrictHostKeyChecking=no "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
     echo 'Could not ssh as root (which is good)'
-    echo -n 'ssh user? '
-    read user
+    # override user
+    . ./src/provision/config.sh
+    if ! ssh -oStrictHostKeyChecking=no "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
+        echo 'ssh failed again after reading config.sh'
+        echo -n 'ssh user? '
+        read user
+    fi
 fi
 cmd="\$envs PROXY=${proxied} DOMAIN='${dropletName}' IIPV4='${pip}' IPV4='${realIP}' IPV6='${ipv6}' ./provision.sh \$args \$*"
 if [ "\${user}" != "root" ]; then
