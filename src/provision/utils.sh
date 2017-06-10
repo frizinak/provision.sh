@@ -39,6 +39,12 @@ set_line () {
     return $?
 }
 
+# replace_line file needle replacement
+replace_line () {
+    sed -i "s/${2}/${3}/" "${1}"
+    set_line "${1}" "${3}"
+}
+
 # ensure_dir dir
 ensure_dir () {
     mkdir -p "$1" 2>/dev/null || true
