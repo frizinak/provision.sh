@@ -507,7 +507,11 @@ ipv6RecordID=$(\
 realIP=${ip}
 if [ "${floatingIP}" != "" ]; then realIP="${floatingIP}"; fi
 
-dir="./servers/${domain}/${dnsName}"
+dir="./servers/${dnsName}.${domain}"
+if [ "${dnsName}" == "@" ] || [ "${dnsName}" == "" ]; then
+    dir="./servers/${domain}"
+fi
+
 mkdir -p "${dir}" 2>/dev/null || true
 json="${dir}/info-${ip}.json"
 yaml="${dir}/info-${ip}.yml"
