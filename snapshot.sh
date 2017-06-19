@@ -61,11 +61,9 @@ getDropletID () {
             echo
         done
 
-        local selection=1
-        if [ $i -gt 1 ]; then
-            prompt 'Which key?'
-            read selection
-        fi
+        local selection
+        prompt 'Which droplet?'
+        read selection
 
         selection=$(( selection - 1 ))
         dropletID=$(echo "${droplets[$selection]}" | grep -oE '^[0-9]+')
