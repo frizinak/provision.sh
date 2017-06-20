@@ -5,8 +5,9 @@ EOF
 
 include web
 include node
+include php 7.0
 
-install openssl libgcrypt11-dev
+install openssl libgcrypt11-dev python
 
 ufw allow 1337
 
