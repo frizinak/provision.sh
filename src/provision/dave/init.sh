@@ -12,17 +12,12 @@ install openssl libgcrypt11-dev python
 ufw allow 1337
 
 ensure_dir "${docroot}"
-if [ ! -d "${docroot}/dave/.git" ]; then
-    git clone https://klipkens@wieni.githost.io/wieni/deploy "${docroot}/dave"
-fi
-
-# make -C "${docroot}/dave" reset
-sudo -u "${webuser}" -i make -C "${docroot}/dave"
-
-rm -rf "${docroot}/dave/resources"
-mv "$1/resources" "${docroot}/dave/resources"
-
+rm -rf "${docroot}/tmp-dave"
+mv "$1/dave" "${docroot}/tmp-dave"
+make -C "${docroot}/tmp-dave"
 fix_user_perms "${webuser}"
+rm -rf "${docroot}/dave"
+mv "${docroot}/tmp-dave" "${docroot}/dave"
 
 service "$1/dave.service" \
     bin="/usr/bin/node ${docroot}/dave/lib/server.js" \
