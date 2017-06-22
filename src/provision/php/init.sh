@@ -15,7 +15,8 @@ install composer \
     php${2}-mbstring \
     php${2}-xml \
     php${2}-soap \
-    php${2}-curl
+    php${2}-curl \
+    php${2}-zip
 
 
 ################################################################################
