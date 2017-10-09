@@ -15,8 +15,11 @@ install composer \
     php${2}-mbstring \
     php${2}-xml \
     php${2}-soap \
-    php${2}-curl \
-    php${2}-zip
+    php${2}-curl
+
+if [ "${2}" != "5.6" ]; then
+    install php${2}-zip
+fi
 
 
 ################################################################################
