@@ -48,9 +48,6 @@ if [ ! -f /etc/php/${2}/mods-available/redis.ini ]; then
     rm -rf phpredis
     git clone https://github.com/phpredis/phpredis.git
     cd phpredis
-    if echo "${2}" | grep '^7' >/dev/null; then
-        git checkout php7
-    fi
     phpize${2}
     ./configure
     make
