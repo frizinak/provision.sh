@@ -35,5 +35,15 @@ fix_user_perms "${webuser}"
 template "$1/pool.ini" user="www-main" mail_from="info@$DOMAIN" \
     > /etc/php/5.6/fpm/pool.d/www.conf
 
+replace_line \
+    '/etc/php/5.6/fpm/php.ini' \
+    ';pcre.backtrack_limit=100000' \
+    'pcre.backtrack_limit=10000'
+
+replace_line \
+    '/etc/php/5.6/cli/php.ini' \
+    ';pcre.backtrack_limit=100000' \
+    'pcre.backtrack_limit=10000'
+
 native_service nginx.service
 native_service php5.6-fpm.service
