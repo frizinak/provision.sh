@@ -12,7 +12,7 @@ logf () {
 list () {
     local f="$1"
     shift
-    echo -en "\033[1;32m${f}\033[0m $*"
+    echo -en "\033[1;32m${f}\033[0m\t$*"
 }
 
 err () {

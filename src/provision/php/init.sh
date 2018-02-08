@@ -29,6 +29,9 @@ if [ ! -f /etc/php/${2}/mods-available/tideways.ini ]; then
     rm -rf tideways
     git clone https://github.com/tideways/php-profiler-extension.git tideways
     cd tideways
+    if [ "${2}" == "5.6" ]; then
+        git reset --hard v4.1.4
+    fi
     phpize${2}
     ./configure --with-php-config=/usr/bin/php-config${2}
     make
@@ -36,10 +39,14 @@ if [ ! -f /etc/php/${2}/mods-available/tideways.ini ]; then
 
     ln -sf /etc/php/${2}/mods-available/tideways.ini /etc/php/${2}/cli/conf.d/20-tideways.ini
     ln -sf /etc/php/${2}/mods-available/tideways.ini /etc/php/${2}/fpm/conf.d/20-tideways.ini
-    set_line /etc/php/${2}/mods-available/tideways.ini 'extension=tideways.so'
 
     cd ..
 fi
+echo 'extension=tideways_xhprof.so' > /etc/php/${2}/mods-available/tideways.ini
+if [ "${2}" == "5.6" ]; then
+    echo 'extension=tideways.so' > /etc/php/${2}/mods-available/tideways.ini
+fi
+
 
 ################################################################################
 ################################### PHPREDIS ###################################
@@ -55,10 +62,10 @@ if [ ! -f /etc/php/${2}/mods-available/redis.ini ]; then
 
     ln -sf /etc/php/${2}/mods-available/redis.ini /etc/php/${2}/cli/conf.d/20-redis.ini
     ln -sf /etc/php/${2}/mods-available/redis.ini /etc/php/${2}/fpm/conf.d/20-redis.ini
-    set_line /etc/php/${2}/mods-available/redis.ini 'extension=redis.so'
 
     cd ..
 fi
+echo 'extension=redis.so' > /etc/php/${2}/mods-available/redis.ini
 
 
 su $webuser -c 'composer global require drush/drush:^8.0'

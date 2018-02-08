@@ -124,10 +124,10 @@ _regionSlug () {
 }
 
 _sizeSlug () {
-    local sizes=($(run size list --no-header))
+    local sizes=($(run size list --no-header | sort -n -k 6))
 
     for size in "${sizes[@]}"; do
-        s=$(echo "${size}" | grep -oiE '^[a-z0-9]+')
+        s=$(echo "${size}" | grep -oiE '^[a-z0-9\-]+')
         if [ "$1" == "${s}" ]; then
             sizeSlug="$1"
             return
@@ -144,7 +144,7 @@ _sizeSlug () {
         prompt 'Which size?'
         read selection
         selection=$(( selection - 1 ))
-        sizeSlug=$(echo "${sizes[$selection]}" | grep -oiE '^[a-z0-9]+')
+        sizeSlug=$(echo "${sizes[$selection]}" | grep -oiE '^[a-z0-9\-]+')
         if [ "${sizeSlug}" != "" ]; then
             break
         fi
