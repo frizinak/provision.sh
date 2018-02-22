@@ -154,7 +154,7 @@ _sizeSlug () {
 _imageID () {
     local gr="$1"
     local imgs=($(\
-        run image list --no-header \
+        { run image list --public --no-header; run image list --no-header; } \
         | sed 's/|/-/g' \
         | sed 's/'$'\t''\+/|/g' \
         | awk -F'|' '{ print $1 "\t" $5 "\t" $4 "\t" $2 }' \
@@ -175,7 +175,7 @@ _imageID () {
         fi
         selection=$(( selection - 1 ))
         imageID=$(echo "${imgs[$selection]}" | grep -oiE '^[0-9]+')
-        imageSlug=$(echo "${imgs[$selection]}" | cut -f2,4 --output-delimiter=' ')
+        imageSlug=$(echo "${imgs[$selection]}" | awk '{ print $2,$4}')
         if [ "${imageID}" != "" ]; then
             break
         fi
@@ -310,7 +310,7 @@ done
 domain="${dropletName}"
 _domain="${domain}"
 
-domains=($(run domain list --no-header | cut -f1))
+domains=($(run domain list --no-header | cut  -d' ' -f1))
 alter=
 while true; do
     for i in "${domains[@]}"; do
@@ -336,7 +336,7 @@ if [ "${alter}" != "" ]; then
     existing=($(run domain records list "${alter}" --no-header))
     for i in "${existing[@]}"; do
         if echo "${i}" | grep '^[0-9]\+\sA\+\s\+' >/dev/null; then
-            name=$(echo "${i}" | cut -f3)
+            name=$(echo "${i}" | awk '{ print $3 }')
             matches=0
             if [ "${name}" == "${dnsName}" ]; then
                 err "Domain ${alter} already has an A/AAAA record for ${dnsName}\n"
@@ -395,7 +395,7 @@ result="$(\
     )"
 
 dropletID=$(echo "${result}" | grep -Eo '^[0-9]+')
-ip=$(echo "${result}" | grep -Eo "${ipRE}")
+ip=$(echo "${result}" | grep -Eo "${ipRE}" | head -n1)
 
 jsonInfo="$(run droplet get "${dropletID}" --output json)"
 
@@ -416,16 +416,15 @@ else
 fi
 
 log "DNS..."
-domain="${alter}"
 
 if [ "${alter}" == "" ]; then
-    log "Creating domain ${domain}\n"
-    run domain create "${domain}" --ip-address "${dnsip}"
+    log "Creating domain ${dropletName}\n"
+    run domain create "${dropletName}" --ip-address "${dnsip}"
     ipRecordID=$(\
-        run domain records list "${domain}" \
+        run domain records list "${dropletName}" \
         | grep A \
         | grep "${dnsip}" \
-        | cut -f1 \
+        | cut -d' ' -f1 \
         )
 else
     log "Adding records to domain ${alter}\n"
@@ -450,7 +449,7 @@ else
         --record-data "${dnsip}" \
         --record-name "${dnsName}" \
         --no-header \
-        | cut -f1 \
+        | cut -d' ' -f1 \
         )
     #fi
 fi
@@ -497,7 +496,7 @@ ipv6RecordID=$(\
     --record-data "${_ipv6}" \
     --record-name "${dnsName}" \
     --no-header \
-    | cut -f1 \
+    | cut -d' ' -f1 \
     )
 #fi
 
@@ -620,15 +619,15 @@ if [ "${floatingIP}" != "" ]; then
     read del
     if [ "\$del" == "y" ] || [ "\$del" == "Y" ]; then
         deleteIP=1
-        "${doctl}" --config "${doctlcfg}" compute floating-ip delete "${floatingIP}"
+        "${doctl}" --config "${doctlcfg}" compute floating-ip delete "${floatingIP}" -f
     fi
 fi
 
-"${doctl}" --config "${doctlcfg}" compute droplet delete "${dropletID}"
-"${doctl}" --config "${doctlcfg}" compute domain records delete "${domain}" "${ipv6RecordID}"
+"${doctl}" --config "${doctlcfg}" compute droplet delete "${dropletID}" -f
+"${doctl}" --config "${doctlcfg}" compute domain records delete "${domain}" "${ipv6RecordID}" -f
 
 if [ \$deleteIP -eq 1 ]; then
-    "${doctl}" --config "${doctlcfg}" compute domain records delete "${domain}" "${ipRecordID}"
+    "${doctl}" --config "${doctlcfg}" compute domain records delete "${domain}" "${ipRecordID}" -f
 fi
 
 
