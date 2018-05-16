@@ -32,6 +32,4 @@ fix_user_perms "${webuser}"
 template "$1/pool.ini" user="www-main" mail_from="info@$DOMAIN" \
     > /etc/php/7.1/fpm/pool.d/www.conf
 
-native_service nginx.service
-native_service php7.1-fpm.service
-
+restart_php_services

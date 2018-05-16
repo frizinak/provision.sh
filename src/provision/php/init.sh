@@ -67,7 +67,7 @@ fi
 echo 'extension=redis.so' > /etc/php/${2}/mods-available/redis.ini
 
 
-su $webuser -c 'composer global require drush/drush:^8.0'
+su $webuser -c 'if [ ! -f $HOME/.config/composer/vendor/bin/drush ]; then composer global require drush/drush:^8.0; fi'
 set_line "/home/${webuser}/.bashrc" \
     'PATH=$PATH:$HOME/.config/composer/vendor/bin'
 
@@ -77,3 +77,9 @@ cat > "/home/${webuser}/.drush/drushrc.php" <<EOF
 <?php
 \$_SERVER['APP_ENV'] = 'local';
 EOF
+
+php_version=${2}
+restart_php_services () {
+    native_service nginx.service
+    native_service php${php_version}-fpm.service
+}

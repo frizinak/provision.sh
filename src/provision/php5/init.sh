@@ -45,5 +45,4 @@ replace_line \
     ';pcre.backtrack_limit=100000' \
     'pcre.backtrack_limit=10000'
 
-native_service nginx.service
-native_service php5.6-fpm.service
+restart_php_services
