@@ -585,25 +585,45 @@ while [ "\$args" == "" ]; do
     fi
 done
 
-make
-
 user=root
-if ! ssh -oStrictHostKeyChecking=no "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
+sshflags='-oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no'
+if ! ssh \$sshflags "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
     echo 'Could not ssh as root (which is good)'
     # override user
     . ./src/provision/config.sh
-    if ! ssh -oStrictHostKeyChecking=no "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
+    if ! ssh \$sshflags "\${user}"@"${ip}" 'ls' >/dev/null 2>&1; then
         echo 'ssh failed again after reading config.sh'
         echo -n 'ssh user? '
         read user
     fi
 fi
+
+make
+
+hostkey="/tmp/hostkey-${realIP}.pub"
+hostsignedkey="/tmp/hostkey-${realIP}-cert.pub"
+
+ssh \$sshflags "\${user}"@"${realIP}" \
+    'cat /etc/ssh/ssh_host_rsa_key.pub' > "\${hostkey}"
+
+names="-n ${dropletName},${realIP},${floatingIP},${ipv6}"
+if [ "${floatingIP}" == "" ]; then
+    names="-n ${dropletName},${realIP},${ipv6}"
+fi
+ssh-keygen -s host_ca -I 'host_ca' -h \$names \
+    -V +52w "\${hostkey}"
+
+cat "\${hostsignedkey}" | ssh \$sshflags "\${user}"@"${realIP}" \
+    'sudo tee /etc/ssh/ssh_host_rsa_key-cert.pub >/dev/null'
+
+rm "\${hostkey}" "\${hostsignedkey}"
+
 cmd="\$envs PROXY=${proxied} DOMAIN='${dropletName}' IIPV4='${pip}' IPV4='${realIP}' IPV6='${ipv6}' ./provision.sh \$args \$*"
 if [ "\${user}" != "root" ]; then
     cmd="sudo \${cmd}"
 fi
-cat dist/provision.sh | ssh -oStrictHostKeyChecking=no "\${user}"@"${ip}" "cat > ./provision.sh; chmod +x ./provision.sh"
-ssh -4 -ttt "\${user}"@"${ip}" "\$cmd"
+cat dist/provision.sh | ssh \$sshflags "\${user}"@"${ip}" "cat > ./provision.sh; chmod +x ./provision.sh"
+ssh \$sshflags -4 -ttt "\${user}"@"${ip}" "\$cmd"
 EOF
 fi
 
