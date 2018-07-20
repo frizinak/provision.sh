@@ -3,10 +3,13 @@
 #################################### GLOBAL ####################################
 ################################################################################
 included=""
+_indent_amount=4
+_indent=-$_indent_amount
 
 ################################################################################
 ################################### UTILITY ####################################
 ################################################################################
+
 # include name
 include () {
     local name=$(echo $@ | cut -d' ' -f1- --output-delimiter='|')
@@ -18,7 +21,24 @@ include () {
     included="${included} ${name}"
     echo "${name}" >> /var/provisioners
 
+    _indent=$(( _indent + _indent_amount ))
+    local pad=$(( 80 - _indent ))
+    local format="\033[1;30;42m %${_indent}s%-${pad}s \033[0m\n"
+    if [ $pad -lt 0 ]; then pad=0; fi
+    printf "${format}" "" "${1} {"
+
     . "./${1}/init.sh" $@
+
+    printf "${format}" "" "} ${1}"
+    _indent=$(( _indent - _indent_amount ))
+}
+
+_indent () {
+    for i in $(seq 0 $1); do
+        if [ $i -ne 0 ]; then
+            echo -en "  "
+        fi
+    done
 }
 
 # help_text <<EOF...EOF
