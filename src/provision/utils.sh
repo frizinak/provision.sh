@@ -122,7 +122,7 @@ install () {
     done
 
     if [ "$list" != "" ]; then
-        apt-get install -y $list
+        apt-get install -qy -o Dpkg::Options::="--force-overwrite" -o Dpkg::Options::="--force-confold" $list
     fi
 }
 
