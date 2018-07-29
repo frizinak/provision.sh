@@ -6,8 +6,7 @@ EOF
 install mariadb-server mariadb-client mariadb-common
 
 native_service mysql.service
-
-if mysql -e 'show databases;' 2>/dev/null; then
+if mysql -e 'show databases;' &>/dev/null; then
     # read-only user
     mysql -e "GRANT SELECT ON *.* TO ro@'%' IDENTIFIED BY 'root'"
 
@@ -21,5 +20,5 @@ fi
 cat > "${home}/.my.cnf" <<EOF
 [client]
 user=root
-password=root
+password=${mysql_pw}
 EOF
