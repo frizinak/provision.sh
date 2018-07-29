@@ -19,7 +19,7 @@ template "$1/jvm.options" \
     > /etc/elasticsearch/jvm.options
 
 if [ "$2" == "public" ]; then
-    ufw allow 9200
+    firewall allow 9200
     replace_line \
         /etc/elasticsearch/elasticsearch.yml \
         '^network.host.*$' \

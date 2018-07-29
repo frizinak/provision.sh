@@ -13,7 +13,7 @@ set_line /etc/sysctl.conf 'net.ipv4.ip_forward=1'
 echo 1 > /proc/sys/net/ipv4/ip_forward
 cp $1/ufw /etc/default/ufw
 cp $1/before.rules /etc/ufw/before.rules
-ufw allow 1194/udp
+firewall allow 1194/udp
 
 if [ ! -f /etc/openvpn/server.crt ]; then
     cp -r /usr/share/easy-rsa/ /etc/openvpn

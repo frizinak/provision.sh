@@ -22,15 +22,15 @@ fix_user_perms "${webuser}"
 ################################################################################
 ################################### FIREWALL ###################################
 ################################################################################
-prefix=''
+firewall='firewall'
 if [ "$2" == "private" ]; then
-    prefix="from ${client} to any port "
+    firewall='firewall_private'
 fi
 
-ufw allow ${prefix}80
-ufw allow ${prefix}443
-ufw allow ${prefix}8080
-ufw allow ${prefix}8081
+$firewall allow 80
+$firewall allow 443
+$firewall allow 8080
+$firewall allow 8081
 
 rules=(\
     "PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080" \
@@ -42,4 +42,3 @@ for rule in "${rules[@]}"; do
         iptables -t nat -A ${rule}
     fi
 done
-

@@ -21,5 +21,5 @@ template "$1/gitlab.rb" \
     > /etc/gitlab/gitlab.rb
 gitlab-ctl reconfigure
 
-ufw allow 80
-ufw allow 8080
+firewall allow 80
+firewall allow 8080

@@ -158,5 +158,18 @@ native_service () {
     systemctl daemon-reload
     systemctl is-enabled "$1" || systemctl enable "$1"
     systemctl restart "$1"
+
+################################################################################
+################################### FIREWALL ###################################
+################################################################################
+_firewall=()
+# firewall allow|
+firewall () {
+    _firewall+=("$*")
+}
+
+firewall_private ()
+{
+    firewall ${*:1:${#*} - 1} from "${client}" to any port ${*:${#*}}
 }
 

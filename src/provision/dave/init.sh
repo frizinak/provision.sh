@@ -9,7 +9,7 @@ include php 7.1
 
 install openssl libgcrypt11-dev python
 
-ufw allow 1337
+firewall allow 1337
 
 ensure_dir "${docroot}"
 rm -rf "${docroot}/tmp-dave"

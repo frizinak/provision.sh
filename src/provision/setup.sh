@@ -45,10 +45,9 @@ systemctl stop apt-daily.timer || true
 systemctl disable apt-daily.timer || true
 
 ################################################################################
-################################### FIREWALL ###################################
+################################# SSH FIREWALL #################################
 ################################################################################
-echo y | ufw reset
-ufw allow 22
+ufw allow 22 > /dev/null
 echo y | ufw enable
 
 ################################################################################
@@ -86,6 +85,9 @@ fix_user_perms "${user}"
 native_service ufw.service
 native_service sshd.service
 
+################################################################################
+################################## PROVISION ###################################
+################################################################################
 rm /var/provisioners || true
 
 for prov in $provisioners; do
@@ -94,4 +96,15 @@ for prov in $provisioners; do
     if [ "$provName" != "" ] && [ "$provName" != "none" ]; then
         include "$provName" $provArgs
     fi
+done
+
+################################################################################
+################################### FIREWALL ###################################
+################################################################################
+echo y | ufw reset
+ufw allow 22 >/dev/null
+echo y | ufw enable
+for rule in "${_firewall[@]}"; do
+    echo "firewall $rule"
+    ufw $rule > /dev/null
 done
