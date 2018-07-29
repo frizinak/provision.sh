@@ -1,7 +1,7 @@
 src:=$(shell find src)
 provision:=dist/provision.sh
 
-rediskey:=src/provision/redis-server/id_rsa
+rediskey:=src/provision/shared-redis-server/id_rsa
 acmekey:=src/provision/tls/acme_account_key
 host_ca:=./host_ca
 
