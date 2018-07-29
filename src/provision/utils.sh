@@ -1,8 +1,4 @@
 #! /bin/bash
-################################################################################
-#################################### GLOBAL ####################################
-################################################################################
-included=""
 _indent_amount=4
 _indent=-$_indent_amount
 
@@ -22,14 +18,26 @@ include () {
     echo "${name}" >> /var/provisioners
 
     _indent=$(( _indent + _indent_amount ))
-    local pad=$(( 80 - _indent ))
+    local pad=$(( 40 - _indent ))
     local format="\033[1;30;42m %${_indent}s%-${pad}s \033[0m\n"
     if [ $pad -lt 0 ]; then pad=0; fi
     printf "${format}" "" "${1} {"
 
+    local s="$(date +%s)"
+    local m="$(date +%-3N)"
+
     . "./${1}/init.sh" $@
 
-    printf "${format}" "" "} ${1}"
+    s=$(( $(date +%s) - s ))
+    m=$(( $(date +%-3N) - m ))
+    local timing="${m}ms"
+    if [ $s -gt 0 ]; then
+        timing="${s}s"
+    fi
+
+    timings+=("${name} $timing")
+
+    printf "${format}" "" "} ${1} ${timing}"
     _indent=$(( _indent - _indent_amount ))
 }
 
