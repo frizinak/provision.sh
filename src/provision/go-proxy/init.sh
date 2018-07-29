@@ -37,7 +37,7 @@ template "$1/proxy.yml" \
 
 fix_user_perms "${webuser}"
 
-service "$1/proxy.service" \
+service async "$1/proxy.service" \
     bin="/home/${webuser}/go/bin/go-reverse-proxy" \
     dir="/home/${webuser}" \
     user="${webuser}"

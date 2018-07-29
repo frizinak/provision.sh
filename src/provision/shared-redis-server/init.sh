@@ -32,7 +32,7 @@ systemctl stop redis-server.service
 ensure_dir "$(dirname "${redissock}")"
 chown "${redisuser}:${redisuser}" "$(dirname "${redissock}")"
 
-service "$1/redis-main.service" \
+service async "$1/redis-main.service" \
     conf="/home/${redisuser}/redis.conf" \
     sock="${redissock}" \
     user="${redisuser}"

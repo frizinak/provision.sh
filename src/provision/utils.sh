@@ -142,22 +142,42 @@ fix_user_perms () {
 ################################################################################
 ################################### SYSTEMD ####################################
 ################################################################################
-# service template key=value key=value...
+# service [async] template key=value key=value...
+_service_pids=()
 service () {
-    local name
-    name="$(basename "$1")"
+    local async=0
+    if [ "$1" == "async" ]; then
+        async=1
+        shift
+    fi
 
+    local name="$(basename "$1")"
     ensure_dir /usr/lib/systemd/system
     template "$@" > "/usr/lib/systemd/system/${name}"
-    systemctl daemon-reload
-    systemctl enable "${name}"
-    systemctl restart "${name}"
+
+    if [ $async -eq 1 ]; then
+        native_service "async" "${name}"
+        return
+    fi
+    native_service "${name}"
 }
 
+# native_service [async] name
 native_service () {
+    if [ "$1" == "async" ]; then
+        _restart_service "$2" > /dev/null &
+        _service_pids+=("$2|$!")
+        return
+    fi
     systemctl daemon-reload
-    systemctl is-enabled "$1" || systemctl enable "$1"
-    systemctl restart "$1"
+    _restart_service "$1"
+}
+
+_restart_service () {
+    systemctl daemon-reload && \
+        { systemctl is-enabled "$1" || systemctl enable "$1"; } && \
+        systemctl restart "$1"
+}
 
 ################################################################################
 ################################### FIREWALL ###################################

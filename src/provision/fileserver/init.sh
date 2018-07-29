@@ -18,4 +18,4 @@ template "$1/nginx.conf" docroot="${docroot}/" \
 ln -sf /etc/nginx/sites-available/fileserver.conf \
     /etc/nginx/sites-enabled/fileserver.conf
 
-native_service nginx.service
+native_service async nginx.service

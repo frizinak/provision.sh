@@ -108,3 +108,21 @@ for rule in "${_firewall[@]}"; do
     echo "firewall $rule"
     ufw $rule > /dev/null
 done
+
+################################################################################
+############################## WAIT FOR SERVICES ###############################
+################################################################################
+failed=0
+for i in "${_service_pids[@]}"; do
+    pid=$(echo "$i" | cut -d '|' -f2)
+    name=$(echo "$i" | cut -d '|' -f1)
+    echo "Waiting for service $name"
+    wait $pid || {
+        failed=1
+        echo "Service $name failed" >&2
+    }
+done
+
+if [ $failed -ne 0 ]; then
+    exit 1
+fi

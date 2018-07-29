@@ -113,8 +113,8 @@ replace_line \
     'pcre.backtrack_limit=10000'
 
 restart_php_services () {
-    native_service nginx.service
-    native_service php${php_version}-fpm.service
+    native_service async nginx.service
+    native_service async php${php_version}-fpm.service
 }
 
 restart_php_services

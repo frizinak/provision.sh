@@ -31,7 +31,7 @@ if [ "$host" != "skip" ]; then
 
     ensure_dir "$(dirname "${redissock}")"
 
-    service "$1/redis-client.service" \
+    service async "$1/redis-client.service" \
         sock="${redissock}" \
         user="${redisuser}" \
         host="${host}"

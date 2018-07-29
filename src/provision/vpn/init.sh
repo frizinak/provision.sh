@@ -45,4 +45,4 @@ fi
 # . ./vars
 # ./build-key <name>
 
-native_service openvpn
+native_service async openvpn

@@ -34,7 +34,7 @@ go get github.com/lazywei/go-opencv
 go get -u "github.com/wieni/go-imgrect"
 fix_user_perms "${webuser}"
 
-service "$1/imgrect.service" \
+ service async "$1/imgrect.service" \
     bin="/home/${webuser}/go/bin/go-imgrect" \
     user="${webuser}"
 

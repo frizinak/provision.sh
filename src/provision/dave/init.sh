@@ -22,6 +22,6 @@ mv "${docroot}/tmp-dave" "${docroot}/dave"
 which npm-cache &>/dev/null || npm -g install npm-cache
 node_link
 
-service "$1/dave.service" \
+service async "$1/dave.service" \
     bin="/usr/bin/node ${docroot}/dave/lib/server.js" \
     user="${webuser}"
