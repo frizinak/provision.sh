@@ -104,13 +104,13 @@ template "$1/pool.ini" \
 
 replace_line \
     "/etc/php/${php_version}/fpm/php.ini" \
-    ';pcre.backtrack_limit=100000' \
-    'pcre.backtrack_limit=10000'
+    ';pcre.backtrack_limit=' \
+    'pcre.backtrack_limit=100000'
 
 replace_line \
     "/etc/php/${php_version}/cli/php.ini" \
-    ';pcre.backtrack_limit=100000' \
-    'pcre.backtrack_limit=10000'
+    ';pcre.backtrack_limit=' \
+    'pcre.backtrack_limit=100000'
 
 restart_php_services () {
     native_service async nginx.service
