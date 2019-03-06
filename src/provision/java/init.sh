@@ -23,7 +23,7 @@ if [ ! -f $dir/bin/java ] || [ ! -f /usr/bin/java ]; then
             curl -SsL  \
                 http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html \
                 | grep -o "Linux ${arch}.*\.tar\.gz" \
-                | grep -o "http:.*\.tar\.gz" \
+                | grep -o "https:.*\.tar\.gz" \
                 | head -n1 \
         )
         curl -L "$u" --cookie 'oraclelicense=accept-securebackup-cookie' | tar -C "$dir" --strip-components=1 -xzf -
