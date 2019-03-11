@@ -6,8 +6,8 @@ EOF
 install composer
 
 su $webuser -c '
-if [ ! -f $HOME/.config/composer/vendor/bin/drush ]; then
-    composer global require drush/drush:^8.0;
+if [ ! -f $HOME/.config/composer/vendor/bin/drush ] || cat $HOME/.config/composer/composer.json | grep "drush" | grep -v 9; then
+    composer global require drush/drush:^9.0;
 fi
 '
 
