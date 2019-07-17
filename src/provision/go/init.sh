@@ -7,7 +7,7 @@ EOF
 include web
 
 if [ ! -d /usr/local/go ]; then
-    curl 'https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz' | \
+    curl 'https://storage.googleapis.com/golang/go1.12.linux-amd64.tar.gz' | \
         tar -C /usr/local -xzf -
 fi
 
